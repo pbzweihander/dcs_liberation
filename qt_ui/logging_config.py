@@ -1,9 +1,21 @@
 """Logging APIs."""
 import logging
 import os
+import sys
 from logging.handlers import RotatingFileHandler
 
 from qt_ui.logging_handler import HookableInMemoryHandler
+
+orig_excepthook = sys.excepthook
+
+
+def log_exception(exc_type, value, traceback):
+    logger = logging.getLogger()
+    logger.debug("Exception occured", exc_info=(exc_type, value, traceback))
+    orig_excepthook(exc_type, value, traceback)
+
+
+sys.excepthook = log_exception
 
 
 def init_logging(version: str) -> None:
